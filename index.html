@@ -543,6 +543,93 @@
                 opacity: 0.7;
             }
 
+            /* HR tab */
+            .hr-hero {
+                background: linear-gradient(135deg, #1a0a0a 0%, #0d0a1a 100%);
+                border: 1px solid #3f1f1f;
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 14px;
+                text-align: center;
+            }
+            .hr-hero-bpm {
+                font-family: "Unbounded", sans-serif;
+                font-size: 48px;
+                font-weight: 900;
+                color: #f87171;
+                line-height: 1;
+            }
+            .hr-hero-label {
+                font-size: 10px;
+                color: #64748b;
+                margin-top: 4px;
+                letter-spacing: 0.08em;
+            }
+            .hr-hero-sub {
+                font-size: 11px;
+                color: #475569;
+                margin-top: 12px;
+            }
+            .hr-zones {
+                margin-bottom: 14px;
+            }
+            .hr-zone {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 14px;
+                margin-bottom: 6px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                border-left-width: 3px;
+            }
+            .hz-num {
+                font-size: 11px;
+                font-weight: 700;
+                min-width: 20px;
+            }
+            .hz-info {
+                flex: 1;
+            }
+            .hz-name {
+                font-size: 12px;
+                color: var(--text);
+                font-weight: 500;
+            }
+            .hz-use {
+                font-size: 10px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+            .hz-range {
+                font-size: 14px;
+                font-weight: 700;
+                white-space: nowrap;
+            }
+            .hr-tip-box {
+                background: #0d1117;
+                border: 1px solid #1e3a5f;
+                border-left: 3px solid #60a5fa;
+                border-radius: 10px;
+                padding: 14px;
+                margin-bottom: 14px;
+                font-size: 11px;
+                color: #64748b;
+                line-height: 1.7;
+            }
+            .hr-tip-box b {
+                color: #93c5fd;
+            }
+            /* HR badge in day rows */
+            .hr-badge {
+                font-size: 9px;
+                padding: 1px 6px;
+                border-radius: 4px;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+
             /* Splash screen */
             #splash {
                 position: fixed;
@@ -669,6 +756,10 @@
                 >
                     <span class="icon">💪</span>
                     <span>Упражнения</span>
+                </button>
+                <button class="nav-btn" onclick="showTab('hr')" id="tab-hr">
+                    <span class="icon">❤️</span>
+                    <span>Пульс</span>
                 </button>
             </nav>
         </div>
@@ -1323,6 +1414,62 @@
                 render();
             }
 
+            const HR_ZONES = [
+                {
+                    num: 1,
+                    name: "Восстановление",
+                    use: "Разминка, заминка",
+                    range: "120–131",
+                    color: "#4ade80",
+                },
+                {
+                    num: 2,
+                    name: "Аэробная база",
+                    use: "Лёгкие выезды, длинные выезды",
+                    range: "131–143",
+                    color: "#60a5fa",
+                },
+                {
+                    num: 3,
+                    name: "Темп",
+                    use: "Средние выезды (май+)",
+                    range: "143–154",
+                    color: "#f97316",
+                },
+                {
+                    num: 4,
+                    name: "Порог",
+                    use: "Темповые выезды (июль)",
+                    range: "154–166",
+                    color: "#e879f9",
+                },
+                {
+                    num: 5,
+                    name: "Максимум",
+                    use: "Не нужна для похода",
+                    range: "166–177",
+                    color: "#f87171",
+                },
+            ];
+
+            const HR_BY_TYPE = {
+                easy: {
+                    label: "З2 · 131–143",
+                    bg: "#1e3a5f",
+                    color: "#60a5fa",
+                },
+                medium: {
+                    label: "З2–З3 · 131–154",
+                    bg: "#1f1a0a",
+                    color: "#f97316",
+                },
+                long: {
+                    label: "З2 · 131–143",
+                    bg: "#1e3a5f",
+                    color: "#60a5fa",
+                },
+            };
+
             function setPhase(i) {
                 activePhase = i;
                 expandedWeek = null;
@@ -1346,8 +1493,10 @@
 
                 if (activeTab === "plan") {
                     el.innerHTML = renderPlan();
-                } else {
+                } else if (activeTab === "exercises") {
                     el.innerHTML = renderExercises();
+                } else {
+                    el.innerHTML = renderHR();
                 }
             }
 
@@ -1366,18 +1515,23 @@
                         const isOpen = expandedWeek === wi;
                         const days = isOpen
                             ? week.days
-                                  .map(
-                                      (d) => `
+                                  .map((d) => {
+                                      const hr =
+                                          HR_BY_TYPE[d.type] || HR_BY_TYPE.easy;
+                                      return `
       <div class="day-row">
         <span class="day-label">${d.day}</span>
         <div class="day-info">
-          <div class="day-name">${d.label} <span class="type-badge">${d.type}</span></div>
+          <div class="day-name">${d.label}
+            <span class="type-badge">${d.type}</span>
+            <span class="hr-badge" style="background:${hr.bg};color:${hr.color}">❤️ ${hr.label}</span>
+          </div>
           ${d.note ? `<div class="day-note">${d.note}</div>` : ""}
         </div>
         <span class="day-km" style="color:${phase.color}">${d.km}</span>
       </div>
-    `,
-                                  )
+    `;
+                                  })
                                   .join("")
                             : "";
                         const tip =
@@ -1446,6 +1600,51 @@
       <div class="progress-label">ПРОГРЕСС К СТАРТУ</div>
       <div class="bar-container">${bars}</div>
       <div class="month-labels"><span>АПР</span><span>МАЙ</span><span>ИЮН</span><span>ИЮЛ</span><span>АВГ</span></div>
+    </div>
+  `;
+            }
+
+            function renderHR() {
+                const zones = HR_ZONES.map(
+                    (z) => `
+    <div class="hr-zone" style="border-left-color:${z.color}">
+      <div class="hz-num" style="color:${z.color}">З${z.num}</div>
+      <div class="hz-info">
+        <div class="hz-name">${z.name}</div>
+        <div class="hz-use">${z.use}</div>
+      </div>
+      <div class="hz-range" style="color:${z.color}">${z.range}</div>
+    </div>
+  `,
+                ).join("");
+
+                return `
+    <div class="hr-hero">
+      <div style="font-size:11px;color:#64748b;letter-spacing:0.08em;margin-bottom:8px">ТВОИ ДАННЫЕ ИЗ APPLE HEALTH</div>
+      <div style="display:flex;justify-content:center;gap:32px;margin-bottom:12px">
+        <div>
+          <div class="hr-hero-bpm" style="font-size:36px">62</div>
+          <div class="hr-hero-label">ПУЛЬС ПОКОЯ</div>
+        </div>
+        <div style="width:1px;background:#2a1a1a"></div>
+        <div>
+          <div class="hr-hero-bpm" style="font-size:36px">177</div>
+          <div class="hr-hero-label">МАКС. ПУЛЬС</div>
+        </div>
+      </div>
+      <div class="hr-hero-sub">Формула Карвонена · Пульсовой резерв: 115 уд/мин</div>
+    </div>
+
+    <div class="hr-tip-box">
+      🎯 <b>Главное правило похода:</b> держи <b>Зону 2 (131–143)</b> на всех длинных и лёгких выездах. Если можешь говорить полными предложениями — ты в правильной зоне. Если нет — сбавляй.<br><br>
+      📈 <b>Почему это важно:</b> аэробная база строится именно в З2. Большинство любителей едут слишком быстро и не прогрессируют — не делай эту ошибку.
+    </div>
+
+    <div style="font-size:10px;color:#475569;letter-spacing:0.08em;margin-bottom:10px">ЗОНЫ ПУЛЬСА</div>
+    <div class="hr-zones">${zones}</div>
+
+    <div class="hr-tip-box" style="border-color:#f97316;border-left-color:#f97316">
+      ⚠️ <b style="color:#fb923c">Сейчас пульс покоя ~84</b> — выше нормы. Это временно после лыж и накопленной усталости. Ориентируйся на базовые 62 для расчёта зон. С началом тренировок вернётся к норме.
     </div>
   `;
             }
