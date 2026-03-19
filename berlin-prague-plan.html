@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- PWA iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Берлин→Прага">
+  <meta name="theme-color" content="#0a0a0f">
+
+  <!-- PWA Manifest inline -->
+  <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%D0%91%D0%B5%D1%80%D0%BB%D0%B8%D0%BD%20%E2%86%92%20%D0%9F%D1%80%D0%B0%D0%B3%D0%B0%22%2C%22short_name%22%3A%22%D0%91%D0%B5%D1%80%D0%BB%D0%B8%D0%BD%E2%86%92%D0%9F%D1%80%D0%B0%D0%B3%D0%B0%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0a0f%22%2C%22theme_color%22%3A%22%230a0a0f%22%2C%22orientation%22%3A%22portrait%22%7D">
+
+  <!-- Apple Touch Icon (SVG→PNG via canvas would be ideal, using inline SVG as base64) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+PHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIHJ4PSIzMiIgZmlsbD0iIzBhMGEwZiIvPjx0ZXh0IHg9IjkwIiB5PSIxMTUiIGZvbnQtc2l6ZT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfmrQ8L3RleHQ+PC9zdmc+">
+
+  <title>Берлин → Прага · План</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Unbounded:wght@700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #0f0f18;
+      --border: #1e1e2e;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --subtle: #475569;
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --orange: #f97316;
+      --purple: #e879f9;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; overflow-x: hidden; }
+
+    /* iOS safe areas */
+    #app { min-height: 100vh; padding-bottom: calc(80px + var(--safe-bottom)); }
+
+    /* Header */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: calc(var(--safe-top) + 16px) 20px 16px;
+    }
+    .header h1 { font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
+    .header p { font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 0.06em; }
+
+    /* Bottom nav */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(10,10,15,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding-bottom: var(--safe-bottom);
+    }
+    .nav-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 12px 0; background: none; border: none; cursor: pointer;
+      color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      transition: color 0.2s;
+    }
+    .nav-btn.active { color: var(--blue); }
+    .nav-btn .icon { font-size: 20px; }
+
+    /* Content */
+    .content { padding: 16px 16px 0; max-width: 600px; margin: 0 auto; }
+
+    /* Phase tabs */
+    .phase-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 12px; scrollbar-width: none; -ms-overflow-style: none; }
+    .phase-scroll::-webkit-scrollbar { display: none; }
+    .phase-btn {
+      flex-shrink: 0; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--muted); font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .phase-btn.active { font-weight: 700; }
+
+    /* Phase header */
+    .phase-header {
+      padding: 16px; border-radius: 12px; border: 1px solid transparent;
+      border-left-width: 3px; margin-bottom: 12px;
+      background: var(--surface);
+    }
+    .phase-header .ph-title { font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 700; }
+    .phase-header .ph-focus { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .phase-header .ph-km { font-size: 22px; font-weight: 700; text-align: right; }
+    .phase-header .ph-label { font-size: 10px; color: var(--muted); text-align: right; }
+    .ph-row { display: flex; justify-content: space-between; align-items: center; }
+
+    /* Week cards */
+    .week-card { margin-bottom: 8px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+    .week-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px; background: var(--surface); cursor: pointer;
+      -webkit-user-select: none; user-select: none;
+    }
+    .week-num {
+      width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center;
+      justify-content: center; font-size: 11px; font-weight: 700; margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .week-label { font-size: 13px; color: var(--text); }
+    .week-km { font-size: 13px; font-weight: 600; margin-right: 10px; }
+    .week-chevron { font-size: 14px; color: var(--subtle); transition: transform 0.2s; }
+    .week-chevron.open { transform: rotate(180deg); }
+    .week-left { display: flex; align-items: center; }
+    .week-right { display: flex; align-items: center; }
+
+    /* Day rows */
+    .week-body { background: #09090e; border-top: 1px solid var(--border); }
+    .day-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 10px 14px; border-bottom: 1px solid #111;
+      gap: 10px;
+    }
+    .day-row:last-child { border-bottom: none; }
+    .day-label { font-size: 11px; color: var(--muted); min-width: 55px; padding-top: 2px; flex-shrink: 0; }
+    .day-info { flex: 1; }
+    .day-name { font-size: 12px; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .type-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: #1e293b; color: #94a3b8; border: 1px solid #2a2a3a; }
+    .day-note { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .day-km { font-size: 13px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+
+    /* Tip */
+    .week-tip { padding: 10px 14px; font-size: 11px; color: #94a3b8; font-style: italic; border-top: 1px solid #111; }
+
+    /* Exercise cards */
+    .ex-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px; margin-bottom: 10px;
+    }
+    .ex-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .ex-left { flex: 1; }
+    .ex-icon-name { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+    .ex-icon { font-size: 20px; }
+    .ex-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .ex-equip { font-size: 10px; padding: 2px 7px; background: #1e293b; border: 1px solid #334155; border-radius: 4px; color: #94a3b8; }
+    .ex-tip { font-size: 11px; color: var(--muted); margin-bottom: 4px; line-height: 1.5; }
+    .ex-prog { font-size: 10px; color: var(--subtle); font-style: italic; }
+    .ex-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 100px; }
+    .ex-sets { font-size: 11px; color: var(--blue); text-align: right; }
+    .yt-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #1a0a0a; border: 1px solid #991b1b; border-radius: 6px;
+      padding: 6px 10px; color: var(--red); font-size: 11px;
+      text-decoration: none; font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap; -webkit-touch-callout: default;
+    }
+
+    /* Back protocol */
+    .back-section { margin-top: 20px; margin-bottom: 16px; }
+    .back-toggle {
+      width: 100%; background: var(--surface); border: 1px solid rgba(127,29,29,0.4);
+      border-radius: 12px; padding: 14px 16px; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      color: #fca5a5; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      text-align: left;
+    }
+    .back-toggle .chevron { font-size: 14px; color: var(--subtle); transition: transform 0.2s; }
+    .back-toggle .chevron.open { transform: rotate(180deg); }
+    .back-body { background: #09090e; border: 1px solid rgba(127,29,29,0.3); border-top: none; border-radius: 0 0 12px 12px; padding: 10px 12px; }
+    .back-tip { padding: 8px 10px; margin-bottom: 6px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); font-size: 11px; color: #94a3b8; line-height: 1.6; }
+    .back-tip:last-child { margin-bottom: 0; }
+
+    /* Progress bar */
+    .progress-section { margin: 20px 0 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .progress-label { font-size: 10px; color: var(--muted); margin-bottom: 12px; letter-spacing: 0.06em; }
+    .bar-container { display: flex; gap: 3px; align-items: flex-end; height: 80px; }
+    .bar { flex: 1; border-radius: 2px; }
+    .month-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: #374151; }
+
+    /* Offline banner */
+    #offline-banner {
+      display: none; position: fixed; top: calc(var(--safe-top) + 60px); left: 16px; right: 16px;
+      background: #7f1d1d; color: #fca5a5; font-size: 11px; padding: 10px 14px;
+      border-radius: 8px; text-align: center; z-index: 200;
+    }
+
+    /* Add to home screen hint */
+    .install-hint {
+      margin: 0 0 16px; padding: 12px 14px; background: #0d1117;
+      border: 1px solid #1e3a5f; border-left: 3px solid var(--blue);
+      border-radius: 10px; font-size: 11px; color: #64748b; line-height: 1.6;
+      display: none;
+    }
+    .install-hint b { color: #93c5fd; }
+    .install-hint.show { display: block; }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.25s ease; }
+
+    /* Touch feedback */
+    .week-header:active, .phase-btn:active, .back-toggle:active, .nav-btn:active { opacity: 0.7; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div class="header">
+    <h1>🚴 Берлин → Прага</h1>
+    <p>ПЛАН ТРЕНИРОВОК · АПРЕЛЬ–АВГУСТ 2026 · CUBE NUROAD PRO</p>
+  </div>
+
+  <div id="offline-banner">⚡ Нет интернета — приложение работает офлайн</div>
+
+  <div class="content" id="main-content"></div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="showTab('plan')" id="tab-plan">
+      <span class="icon">📅</span>
+      <span>План</span>
+    </button>
+    <button class="nav-btn" onclick="showTab('exercises')" id="tab-exercises">
+      <span class="icon">💪</span>
+      <span>Упражнения</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+const PHASES = [
+  { id:1, name:"Фаза 1", period:"Апрель", subtitle:"Укрепление базы", color:"#4ade80", weeklyKm:"40–60 км", focus:"Спина + посадка", weeks:[
+    {num:1,total:50,tip:"Главное правило апреля: заканчивай выезд до боли, не после",days:[
+      {day:"Вт/Ср",type:"easy",label:"Лёгкий выезд",km:"15 км",note:"Темп разговорный, никакого геройства"},
+      {day:"Чт/Пт",type:"easy",label:"Лёгкий выезд",km:"15 км",note:"Следи за поясницей — останови, если дискомфорт"},
+      {day:"Сб/Вс",type:"long",label:"Длинный выезд",km:"20 км",note:"Остановка каждые 10 км, растяжка спины"},
+    ]},
+    {num:2,total:60,tip:"",days:[
+      {day:"Вт/Ср",type:"easy",label:"Лёгкий выезд",km:"15 км",note:""},
+      {day:"Чт/Пт",type:"easy",label:"Лёгкий выезд",km:"20 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Длинный выезд",km:"25 км",note:"Остановка каждые 12 км"},
+    ]},
+    {num:3,total:65,tip:"Если спина сигналит после 20 км — это данные для байкфиттера",days:[
+      {day:"Вт/Ср",type:"easy",label:"Лёгкий выезд",km:"15 км",note:""},
+      {day:"Чт/Пт",type:"easy",label:"Лёгкий выезд",km:"20 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Длинный выезд",km:"30 км",note:"Тест: доедешь до 30 км без боли?"},
+    ]},
+    {num:4,total:45,tip:"Разгрузочная неделя обязательна — мышцы растут в отдыхе",days:[
+      {day:"Вт/Ср",type:"easy",label:"Восстановление",km:"10 км",note:""},
+      {day:"Чт/Пт",type:"easy",label:"Лёгкий выезд",km:"15 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Лёгкий длинный",km:"20 км",note:"Разгрузочная неделя — минус 30% объёма"},
+    ]},
+  ]},
+  { id:2, name:"Фаза 2", period:"Май", subtitle:"Рост объёма", color:"#60a5fa", weeklyKm:"70–100 км", focus:"Длинные выезды", weeks:[
+    {num:5,total:80,tip:"",days:[
+      {day:"Вт/Ср",type:"easy",label:"Лёгкий выезд",km:"20 км",note:""},
+      {day:"Чт/Пт",type:"medium",label:"Средний выезд",km:"25 км",note:"Чуть выше комфортного темпа"},
+      {day:"Сб/Вс",type:"long",label:"Длинный выезд",km:"35 км",note:"Возьми еду и воду"},
+    ]},
+    {num:6,total:85,tip:"40 км — психологический барьер. После него бояться нечего",days:[
+      {day:"Вт/Ср",type:"easy",label:"Лёгкий выезд",km:"20 км",note:""},
+      {day:"Чт/Пт",type:"medium",label:"Средний выезд",km:"25 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Длинный выезд",km:"40 км",note:"Первый серьёзный тест спины"},
+    ]},
+    {num:7,total:105,tip:"",days:[
+      {day:"Вт/Ср",type:"easy",label:"Лёгкий выезд",km:"25 км",note:""},
+      {day:"Чт/Пт",type:"medium",label:"Средний выезд",km:"30 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Длинный выезд",km:"50 км",note:"Питание каждые 45 мин"},
+    ]},
+    {num:8,total:65,tip:"Тело запоминает нагрузку. Отдых = адаптация",days:[
+      {day:"Вт/Ср",type:"easy",label:"Восстановление",km:"15 км",note:""},
+      {day:"Чт/Пт",type:"easy",label:"Лёгкий выезд",km:"20 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Лёгкий длинный",km:"30 км",note:"Разгрузочная неделя"},
+    ]},
+  ]},
+  { id:3, name:"Фаза 3", period:"Июнь", subtitle:"Выносливость", color:"#f97316", weeklyKm:"120–160 км", focus:"Несколько дней подряд", weeks:[
+    {num:9,total:125,tip:"",days:[
+      {day:"Вт/Ср",type:"medium",label:"Средний выезд",km:"30 км",note:""},
+      {day:"Чт/Пт",type:"medium",label:"Средний выезд",km:"35 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Длинный выезд",km:"60 км",note:"Дневной максимум похода"},
+    ]},
+    {num:10,total:120,tip:"",days:[
+      {day:"Вт/Ср",type:"medium",label:"Средний выезд",km:"30 км",note:""},
+      {day:"Чт/Пт",type:"medium",label:"Средний выезд",km:"35 км",note:""},
+      {day:"Сб",type:"long",label:"День 1 мини-похода",km:"55 км",note:"С грузом или без"},
+    ]},
+    {num:11,total:170,tip:"Два дня подряд — самый важный тест перед поездкой",days:[
+      {day:"Вт/Ср",type:"medium",label:"Средний выезд",km:"35 км",note:""},
+      {day:"Пт",type:"easy",label:"Лёгкий выезд",km:"25 км",note:""},
+      {day:"Сб-Вс",type:"long",label:"2 дня подряд",km:"55+55 км",note:"Ключевой тест! Имитация похода"},
+    ]},
+    {num:12,total:85,tip:"",days:[
+      {day:"Вт/Ср",type:"easy",label:"Восстановление",km:"20 км",note:""},
+      {day:"Чт/Пт",type:"easy",label:"Лёгкий выезд",km:"25 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Лёгкий длинный",km:"40 км",note:"Разгрузочная неделя"},
+    ]},
+  ]},
+  { id:4, name:"Фаза 4", period:"Июль", subtitle:"Пик формы", color:"#e879f9", weeklyKm:"160–200 км", focus:"Симуляция похода", weeks:[
+    {num:13,total:200,tip:"",days:[
+      {day:"Вт/Ср",type:"medium",label:"Темповый выезд",km:"40 км",note:""},
+      {day:"Пт",type:"easy",label:"Лёгкий выезд",km:"30 км",note:""},
+      {day:"Сб-Вс",type:"long",label:"2 дня подряд",km:"65+65 км",note:"С загруженным велосипедом!"},
+    ]},
+    {num:14,total:210,tip:"После этих выходных ты будешь знать: готов или нет",days:[
+      {day:"Вт/Ср",type:"medium",label:"Темповый выезд",km:"40 км",note:""},
+      {day:"Пт",type:"easy",label:"Лёгкий выезд",km:"30 км",note:""},
+      {day:"Сб-Вс",type:"long",label:"2 дня подряд",km:"70+70 км",note:"Проверка снаряжения, питания, ночёвки"},
+    ]},
+    {num:15,total:120,tip:"",days:[
+      {day:"Вт/Ср",type:"medium",label:"Темповый выезд",km:"35 км",note:""},
+      {day:"Пт",type:"easy",label:"Лёгкий выезд",km:"25 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Длинный выезд",km:"60 км",note:"Начало снижения объёма"},
+    ]},
+    {num:16,total:80,tip:"Разгрузка — не лень, это стратегия",days:[
+      {day:"Вт/Ср",type:"easy",label:"Восстановление",km:"20 км",note:""},
+      {day:"Пт",type:"easy",label:"Лёгкий выезд",km:"20 км",note:""},
+      {day:"Сб/Вс",type:"long",label:"Лёгкий длинный",km:"40 км",note:"Финальная разгрузочная"},
+    ]},
+  ]},
+  { id:5, name:"Тейпер", period:"Авг", subtitle:"Свежесть перед стартом", color:"#fbbf24", weeklyKm:"40–60 км", focus:"Лёгкость и готовность", weeks:[
+    {num:17,total:55,tip:"Не добавляй нагрузку! Форма уже набрана — её нельзя потерять за неделю",days:[
+      {day:"Пн/Вт",type:"easy",label:"Лёгкий выезд",km:"20 км",note:"Высокий каденс, низкое усилие"},
+      {day:"Ср/Чт",type:"easy",label:"Лёгкий выезд",km:"20 км",note:""},
+      {day:"Пт",type:"easy",label:"Проверочный",km:"15 км",note:"Финальная проверка байка"},
+    ]},
+  ]},
+];
+
+const EXERCISES = [
+  {icon:"💪",name:"Планка",sets:"3 × 30–60 сек",equip:"Ничего",tip:"Тело — прямая линия, не проваливай поясницу. Начни с 30 сек, к июню цель — 60 сек.",prog:"Апр: 3×30с → Июн: 3×60с",yt:"https://www.youtube.com/results?search_query=forearm+plank+correct+form+beginners"},
+  {icon:"🦅",name:"Bird-dog",sets:"3 × 10 повт.",equip:"Ничего",tip:"На четвереньках: правая рука + левая нога одновременно, держишь 2 сек. Не вращай таз.",prog:"Ключевое упражнение для твоей спины",yt:"https://www.youtube.com/results?search_query=bird+dog+exercise+lower+back+tutorial"},
+  {icon:"🍑",name:"Glute Bridge + резинка",sets:"3 × 12",equip:"Резинка",tip:"Резинка чуть выше колен, разводи колени при подъёме таза. Ягодицы — главный мотор на велосипеде.",prog:"Май: добавь паузу 2 сек наверху",yt:"https://www.youtube.com/results?search_query=banded+glute+bridge+exercise+tutorial"},
+  {icon:"🏋️",name:"Подтягивания / вис",sets:"3 × max / 20 сек",equip:"Турник",tip:"Если не выходят подтягивания — просто вис 3×20 сек. Верхняя спина держит в посадке.",prog:"Апр: вис → Июн: 3×5 подтягиваний",yt:"https://www.youtube.com/results?search_query=pull+up+tutorial+beginners+dead+hang"},
+  {icon:"🏃",name:"Тяга к подбородку",sets:"3 × 12",equip:"Гантели",tip:"Стоя, тянешь гантели к подбородку — локти выше кистей. Плечи и верх спины для комфорта на руле.",prog:"Добавь в мае, если первые три освоены",yt:"https://www.youtube.com/results?search_query=upright+row+dumbbell+shoulder+exercise"},
+  {icon:"🧘",name:"Кошка-корова",sets:"10 повторений",equip:"Ничего",tip:"До и после каждой поездки. Медленно выгибаешь и округляешь спину на четвереньках.",prog:"Обязательно, не опционально",yt:"https://www.youtube.com/results?search_query=cat+cow+stretch+lower+back+yoga"},
+  {icon:"🦵",name:"Растяжка сгибателей бедра",sets:"30 сек × 2 стороны",equip:"Ничего",tip:"Одно колено на полу, другая нога впереди, таз вперёд. Сгибатели тянут поясницу — растяни их.",prog:"Критично при твоей боли в спине",yt:"https://www.youtube.com/results?search_query=hip+flexor+stretch+cyclists+lower+back"},
+];
+
+const BACK_TIPS = [
+  "🔧 Первоочередно: пройди байкфиттинг. Боль в спине после 20–30 км — почти всегда неправильная посадка.",
+  "🧘 Делай растяжку поясницы до и после каждого выезда — кошка-корова, наклоны.",
+  "🛑 Каждые 15–20 км останавливайся на 2–3 мин: встань с седла, разомнись.",
+  "⚙️ Проверь давление в шинах — перекачанные шины увеличивают вибрацию и нагрузку на спину.",
+  "💪 Кор 3× в неделю — сильный пресс снимает нагрузку со спины на велосипеде.",
+];
+
+const WEEK_KMS = [13,50,60,65,45,80,85,105,65,125,120,170,85,200,210,120,80,55];
+const PHASE_COLORS = ["#4ade80","#4ade80","#4ade80","#4ade80","#60a5fa","#60a5fa","#60a5fa","#60a5fa","#f97316","#f97316","#f97316","#f97316","#e879f9","#e879f9","#e879f9","#e879f9","#fbbf24","#fbbf24"];
+
+let activeTab = 'plan';
+let activePhase = 0;
+let expandedWeek = null;
+let showBack = false;
+let isStandalone = window.navigator.standalone === true;
+
+function showTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  expandedWeek = null;
+  render();
+}
+
+function setPhase(i) {
+  activePhase = i;
+  expandedWeek = null;
+  render();
+}
+
+function toggleWeek(i) {
+  expandedWeek = expandedWeek === i ? null : i;
+  render();
+}
+
+function toggleBack() {
+  showBack = !showBack;
+  render();
+}
+
+function render() {
+  const el = document.getElementById('main-content');
+  el.className = 'content fade-in';
+  void el.offsetWidth; // reflow for animation
+
+  if (activeTab === 'plan') {
+    el.innerHTML = renderPlan();
+  } else {
+    el.innerHTML = renderExercises();
+  }
+}
+
+function renderPlan() {
+  const phase = PHASES[activePhase];
+  const phaseButtons = PHASES.map((p, i) => `
+    <button class="phase-btn ${i === activePhase ? 'active' : ''}"
+      style="${i === activePhase ? `background:${p.color}20;border-color:${p.color};color:${p.color}` : ''}"
+      onclick="setPhase(${i})">${p.name} · ${p.period}</button>
+  `).join('');
+
+  const weeks = phase.weeks.map((week, wi) => {
+    const isOpen = expandedWeek === wi;
+    const days = isOpen ? week.days.map(d => `
+      <div class="day-row">
+        <span class="day-label">${d.day}</span>
+        <div class="day-info">
+          <div class="day-name">${d.label} <span class="type-badge">${d.type}</span></div>
+          ${d.note ? `<div class="day-note">${d.note}</div>` : ''}
+        </div>
+        <span class="day-km" style="color:${phase.color}">${d.km}</span>
+      </div>
+    `).join('') : '';
+    const tip = isOpen && week.tip ? `<div class="week-tip" style="background:${phase.color}10;border-top:1px solid ${phase.color}20">💡 ${week.tip}</div>` : '';
+    return `
+      <div class="week-card">
+        <div class="week-header" onclick="toggleWeek(${wi})">
+          <div class="week-left">
+            <div class="week-num" style="background:${phase.color}20;border:1px solid ${phase.color}50;color:${phase.color}">${week.num}</div>
+            <span class="week-label">Неделя ${week.num}</span>
+          </div>
+          <div class="week-right">
+            <span class="week-km" style="color:${phase.color}">${week.total} км</span>
+            <span class="week-chevron ${isOpen ? 'open' : ''}">▾</span>
+          </div>
+        </div>
+        ${isOpen ? `<div class="week-body">${days}${tip}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  const backBody = showBack ? `
+    <div class="back-body">
+      ${BACK_TIPS.map(t => `<div class="back-tip">${t}</div>`).join('')}
+    </div>
+  ` : '';
+
+  const bars = WEEK_KMS.map((km, i) => `
+    <div class="bar" style="height:${Math.max(4, km/2.5)}px;background:${PHASE_COLORS[i]};opacity:${0.5 + i/36}"></div>
+  `).join('');
+
+  return `
+    <div class="phase-scroll">${phaseButtons}</div>
+
+    <div class="phase-header" style="border-color:${phase.color}30;border-left-color:${phase.color}">
+      <div class="ph-row">
+        <div>
+          <div class="ph-title" style="color:${phase.color}">${phase.name}: ${phase.subtitle}</div>
+          <div class="ph-focus">Фокус: ${phase.focus}</div>
+        </div>
+        <div>
+          <div class="ph-label">ЦЕЛЬ НЕДЕЛИ</div>
+          <div class="ph-km" style="color:${phase.color}">${phase.weeklyKm}</div>
+        </div>
+      </div>
+    </div>
+
+    ${weeks}
+
+    <div class="back-section">
+      <button class="back-toggle" onclick="toggleBack()" style="border-radius:${showBack ? '12px 12px 0 0' : '12px'}">
+        <span>⚠️ Протокол: боль в спине</span>
+        <span class="chevron ${showBack ? 'open' : ''}">▾</span>
+      </button>
+      ${backBody}
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-label">ПРОГРЕСС К СТАРТУ</div>
+      <div class="bar-container">${bars}</div>
+      <div class="month-labels"><span>АПР</span><span>МАЙ</span><span>ИЮН</span><span>ИЮЛ</span><span>АВГ</span></div>
+    </div>
+  `;
+}
+
+function renderExercises() {
+  const installHint = !isStandalone ? `
+    <div class="install-hint show">
+      📱 <b>Сохрани на Home Screen:</b> в Safari нажми кнопку «Поделиться» → «На экран Домой»
+    </div>
+  ` : '';
+
+  const cards = EXERCISES.map(ex => `
+    <div class="ex-card">
+      <div class="ex-header">
+        <div class="ex-left">
+          <div class="ex-icon-name">
+            <span class="ex-icon">${ex.icon}</span>
+            <span class="ex-name">${ex.name}</span>
+            <span class="ex-equip">${ex.equip}</span>
+          </div>
+          <div class="ex-tip">${ex.tip}</div>
+          <div class="ex-prog">→ ${ex.prog}</div>
+        </div>
+        <div class="ex-right">
+          <div class="ex-sets">${ex.sets}</div>
+          <a class="yt-btn" href="${ex.yt}" target="_blank">▶ YouTube</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    ${installHint}
+    <div style="margin-bottom:14px;padding:12px 14px;background:#0d1117;border:1px solid #1e3a5f;border-radius:10px;font-size:11px;color:#64748b">
+      ⏱ <b style="color:#93c5fd">15 минут</b> · 3 раза в неделю · в дни велопоездок · без спортзала
+    </div>
+    ${cards}
+    <div style="margin-bottom:16px;padding:14px;background:#0d1117;border:1px solid #f97316;border-left:3px solid #f97316;border-radius:10px;font-size:11px;color:#94a3b8">
+      🥊 <b style="color:#fb923c">Боксёрские перчатки</b> — не для подготовки к Праге, но отличное кардио в дождливый день.
+    </div>
+  `;
+}
+
+// Offline detection
+window.addEventListener('online', () => { document.getElementById('offline-banner').style.display = 'none'; });
+window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display = 'block'; });
+
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+  const swCode = `
+const CACHE = 'berlin-prague-v1';
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html'])).catch(() => {}));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener('fetch', e => {
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+    const clone = res.clone();
+    caches.open(CACHE).then(c => c.put(e.request, clone));
+    return res;
+  }).catch(() => caches.match('./'))));
+});
+  `;
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
