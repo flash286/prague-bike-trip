@@ -535,6 +535,103 @@
                 animation: fadeIn 0.25s ease;
             }
 
+            /* Day checkbox */
+            .day-check {
+                position: relative;
+                width: 22px;
+                height: 22px;
+                flex-shrink: 0;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .day-check input {
+                position: absolute;
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+                margin: 0;
+                z-index: 2;
+            }
+            .day-check .checkmark {
+                position: absolute;
+                inset: 0;
+                border-radius: 6px;
+                border: 1.5px solid var(--border);
+                background: transparent;
+                transition: all 0.15s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .day-check .checkmark::after {
+                content: '';
+                display: none;
+                width: 10px;
+                height: 10px;
+                border-radius: 3px;
+            }
+            .day-check input:checked + .checkmark {
+                border-color: var(--green);
+                background: rgba(74, 222, 128, 0.15);
+            }
+            .day-check input:checked + .checkmark::after {
+                display: block;
+                content: '✓';
+                font-size: 14px;
+                color: var(--green);
+                width: auto;
+                height: auto;
+                background: none;
+            }
+            .day-row.completed .day-name,
+            .day-row.completed .day-km,
+            .day-row.completed .day-note,
+            .day-row.completed .day-label {
+                opacity: 0.45;
+                text-decoration: line-through;
+                text-decoration-color: var(--subtle);
+            }
+
+            /* Week progress */
+            .week-progress {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-right: 10px;
+            }
+            .week-progress-bar {
+                width: 36px;
+                height: 4px;
+                border-radius: 2px;
+                background: var(--border);
+                overflow: hidden;
+            }
+            .week-progress-fill {
+                height: 100%;
+                border-radius: 2px;
+                background: var(--green);
+                transition: width 0.3s;
+            }
+            .week-progress-text {
+                font-size: 9px;
+                color: var(--muted);
+                min-width: 24px;
+                text-align: right;
+            }
+            .week-card.all-done {
+                border-color: rgba(74, 222, 128, 0.3);
+            }
+            .week-card.all-done .week-header {
+                background: rgba(74, 222, 128, 0.05);
+            }
+
+            /* Phase progress badge */
+            .phase-progress {
+                font-size: 9px;
+                opacity: 0.7;
+            }
+
             /* Touch feedback */
             .week-header:active,
             .phase-btn:active,
@@ -1404,6 +1501,49 @@
             let showBack = false;
             let isStandalone = window.navigator.standalone === true;
 
+            // Progress tracking with localStorage
+            const STORAGE_KEY = 'berlin-prague-progress';
+
+            function loadProgress() {
+                try {
+                    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+                } catch { return {}; }
+            }
+
+            function saveProgress(data) {
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+            }
+
+            let progress = loadProgress();
+
+            function toggleDay(weekNum, dayIdx) {
+                const key = `w${weekNum}_d${dayIdx}`;
+                if (progress[key]) { delete progress[key]; }
+                else { progress[key] = Date.now(); }
+                saveProgress(progress);
+                render();
+            }
+
+            function isDayDone(weekNum, dayIdx) {
+                return !!progress[`w${weekNum}_d${dayIdx}`];
+            }
+
+            function weekProgress(week) {
+                let done = 0;
+                week.days.forEach((_, i) => { if (isDayDone(week.num, i)) done++; });
+                return { done, total: week.days.length };
+            }
+
+            function phaseProgress(phase) {
+                let done = 0, total = 0;
+                phase.weeks.forEach(w => {
+                    const p = weekProgress(w);
+                    done += p.done;
+                    total += p.total;
+                });
+                return { done, total };
+            }
+
             function showTab(tab) {
                 activeTab = tab;
                 document
@@ -1503,11 +1643,15 @@
             function renderPlan() {
                 const phase = PHASES[activePhase];
                 const phaseButtons = PHASES.map(
-                    (p, i) => `
+                    (p, i) => {
+                        const pp = phaseProgress(p);
+                        const pctText = pp.total > 0 && pp.done > 0 ? ` · ${Math.round(pp.done / pp.total * 100)}%` : '';
+                        return `
     <button class="phase-btn ${i === activePhase ? "active" : ""}"
       style="${i === activePhase ? `background:${p.color}20;border-color:${p.color};color:${p.color}` : ""}"
-      onclick="setPhase(${i})">${p.name} · ${p.period}</button>
-  `,
+      onclick="setPhase(${i})">${p.name} · ${p.period}<span class="phase-progress">${pctText}</span></button>
+  `;
+                    },
                 ).join("");
 
                 const weeks = phase.weeks
@@ -1515,11 +1659,16 @@
                         const isOpen = expandedWeek === wi;
                         const days = isOpen
                             ? week.days
-                                  .map((d) => {
+                                  .map((d, di) => {
                                       const hr =
                                           HR_BY_TYPE[d.type] || HR_BY_TYPE.easy;
+                                      const done = isDayDone(week.num, di);
                                       return `
-      <div class="day-row">
+      <div class="day-row ${done ? 'completed' : ''}">
+        <label class="day-check" onclick="event.stopPropagation()">
+          <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleDay(${week.num}, ${di})">
+          <span class="checkmark"></span>
+        </label>
         <span class="day-label">${d.day}</span>
         <div class="day-info">
           <div class="day-name">${d.label}
@@ -1538,14 +1687,21 @@
                             isOpen && week.tip
                                 ? `<div class="week-tip" style="background:${phase.color}10;border-top:1px solid ${phase.color}20">💡 ${week.tip}</div>`
                                 : "";
+                        const wp = weekProgress(week);
+                        const wpPct = wp.total > 0 ? Math.round(wp.done / wp.total * 100) : 0;
+                        const allDone = wp.done === wp.total;
                         return `
-      <div class="week-card">
+      <div class="week-card ${allDone ? 'all-done' : ''}">
         <div class="week-header" onclick="toggleWeek(${wi})">
           <div class="week-left">
-            <div class="week-num" style="background:${phase.color}20;border:1px solid ${phase.color}50;color:${phase.color}">${week.num}</div>
+            <div class="week-num" style="background:${allDone ? 'rgba(74,222,128,0.2)' : phase.color + '20'};border:1px solid ${allDone ? 'rgba(74,222,128,0.5)' : phase.color + '50'};color:${allDone ? '#4ade80' : phase.color}">${allDone ? '✓' : week.num}</div>
             <span class="week-label">Неделя ${week.num}</span>
           </div>
           <div class="week-right">
+            ${wp.done > 0 ? `<div class="week-progress">
+              <div class="week-progress-bar"><div class="week-progress-fill" style="width:${wpPct}%"></div></div>
+              <span class="week-progress-text">${wp.done}/${wp.total}</span>
+            </div>` : ''}
             <span class="week-km" style="color:${phase.color}">${week.total} км</span>
             <span class="week-chevron ${isOpen ? "open" : ""}">▾</span>
           </div>
@@ -1598,6 +1754,18 @@
 
     <div class="progress-section">
       <div class="progress-label">ПРОГРЕСС К СТАРТУ</div>
+      ${(() => {
+        let totalDone = 0, totalAll = 0;
+        PHASES.forEach(p => { const pp = phaseProgress(p); totalDone += pp.done; totalAll += pp.total; });
+        const pct = totalAll > 0 ? Math.round(totalDone / totalAll * 100) : 0;
+        return totalDone > 0 ? `<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div style="flex:1;height:6px;border-radius:3px;background:var(--border);overflow:hidden">
+            <div style="height:100%;width:${pct}%;border-radius:3px;background:var(--green);transition:width 0.3s"></div>
+          </div>
+          <span style="font-size:13px;font-weight:700;color:var(--green)">${pct}%</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Выполнено тренировок: ${totalDone} из ${totalAll}</div>` : '';
+      })()}
       <div class="bar-container">${bars}</div>
       <div class="month-labels"><span>АПР</span><span>МАЙ</span><span>ИЮН</span><span>ИЮЛ</span><span>АВГ</span></div>
     </div>
