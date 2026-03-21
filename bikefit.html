@@ -590,6 +590,14 @@
                     Изменения делай по 5 мм за раз, катай минимум 2–3 выезда на каждой настройке.
                 </div>
             </div>
+
+            <button onclick="exportMD()" style="
+                display: block; width: 100%; margin: 16px 0 8px;
+                padding: 14px; border-radius: 12px; border: 1px solid var(--cyan);
+                background: rgba(34,211,238,0.08); color: var(--cyan);
+                font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+                cursor: pointer; letter-spacing: 0.05em;
+            ">↓ Экспорт в Markdown</button>
         </div>
 
         <!-- TAB 4: Adjust -->
@@ -953,16 +961,101 @@
         }
     }
 
-    // Init progress
-    updateProgress();
+    // localStorage persistence
+    const LS_KEY = 'bikefit_v1';
 
-    // Persist values in sessionStorage-like behavior (in-memory)
-    const savedData = {};
-    document.querySelectorAll('.input-field').forEach(field => {
-        field.addEventListener('change', () => {
-            savedData[field.id] = field.value;
-        });
+    function saveToStorage() {
+        const data = {};
+        document.querySelectorAll('.input-field').forEach(f => { data[f.id] = f.value; });
+        localStorage.setItem(LS_KEY, JSON.stringify(data));
+    }
+
+    function loadFromStorage() {
+        try {
+            const data = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+            Object.entries(data).forEach(([id, val]) => {
+                const el = document.getElementById(id);
+                if (el && val !== '') el.value = val;
+            });
+        } catch(e) {}
+    }
+
+    document.querySelectorAll('.input-field').forEach(f => {
+        f.addEventListener('input', saveToStorage);
+        f.addEventListener('change', saveToStorage);
     });
+
+    loadFromStorage();
+    updateProgress();
+    calculate();
+
+    // Export to Markdown
+    function exportMD() {
+        const get = id => document.getElementById(id)?.value || '—';
+        const getRes = id => document.getElementById(id)?.textContent || '—';
+
+        const date = new Date().toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        const md = `# Байкфиттинг — Cube Nuroad Pro
+_Дата: ${date}_
+
+## Замеры тела
+
+| Параметр | Значение |
+|----------|----------|
+| Длина шва (inseam) | ${get('inseam')} см |
+| Длина торса | ${get('torso')} см |
+| Длина руки | ${get('arm')} см |
+| Ширина плеч | ${get('shoulders')} см |
+| Гибкость (от пальцев ног) | ${get('flexibility')} см |
+
+## Текущие настройки велосипеда
+
+| Параметр | Значение |
+|----------|----------|
+| Высота седла | ${get('cur-saddle')} см |
+| Расстояние седло→руль | ${get('cur-reach')} см |
+| Перепад седло→руль | ${get('cur-drop')} см |
+| Длина выноса | ${get('cur-stem')} мм |
+
+## Расчётные рекомендации
+
+| Параметр | Рекомендация |
+|----------|-------------|
+| Высота седла | ${getRes('res-saddle')} |
+| Расстояние седло→руль | ${getRes('res-reach')} |
+| Перепад седло→руль | ${getRes('res-drop')} |
+| Ширина руля | ${getRes('res-handlebar')} |
+
+## Что менять
+
+${(() => {
+    const items = [];
+    ['delta-saddle', 'delta-reach', 'delta-drop'].forEach(id => {
+        const card = document.getElementById(id);
+        if (card && card.style.display !== 'none') {
+            const title = card.querySelector('.check-title')?.textContent || '';
+            const text = card.querySelector('.check-item')?.textContent || '';
+            items.push(`- **${title}**: ${text}`);
+        }
+    });
+    const ok = document.getElementById('delta-ok');
+    if (ok && ok.style.display !== 'none') items.push('- Все параметры в норме');
+    return items.length ? items.join('\n') : '- Заполни замеры для получения рекомендаций';
+})()}
+
+---
+_Сгенерировано: Биакфиттинг PWA · Berlin→Praha 2026_
+`;
+
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bikefit-${new Date().toISOString().slice(0,10)}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
 </script>
 
 </body>
