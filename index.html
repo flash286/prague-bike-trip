@@ -944,7 +944,7 @@
             <div class="splash-bar-wrap">
                 <div class="splash-bar"></div>
             </div>
-            <div class="splash-route">335 км · EuroVelo 7</div>
+            <div class="splash-route">465 км · 6 дней</div>
         </div>
 
         <div id="app">
@@ -2026,39 +2026,41 @@ self.addEventListener('fetch', e => {
                 navigator.serviceWorker.register(swUrl).catch(() => {});
             }
 
-            // Route waypoints — Berlin → Prague via EuroVelo 7
+            // Route waypoints — Berlin → Prague via Radweg Berlin-Dresden + Elberadweg + Labská stezka
             const ROUTE_WAYPOINTS = [
-                { name: "Берлин", sub: "Старт · Alexanderplatz", lat: 52.5200, lng: 13.4050, km: 0, elev: 34 },
-                { name: "Людвигсфельде", sub: "Выезд из Берлина", lat: 52.3010, lng: 13.2540, km: 28, elev: 42 },
-                { name: "Барут", sub: "Бранденбург", lat: 52.0520, lng: 13.5030, km: 55, elev: 48 },
-                { name: "Люббенау", sub: "Шпреевальд · Каналы", lat: 51.8660, lng: 13.9570, km: 95, elev: 52 },
-                { name: "Коттбус", sub: "Отдых · инфраструктура", lat: 51.7600, lng: 14.3340, km: 125, elev: 68 },
-                { name: "Шпремберг", sub: "Шпрее", lat: 51.5720, lng: 14.3710, km: 150, elev: 105 },
-                { name: "Хойерсверда", sub: "Верхняя Лужица", lat: 51.4340, lng: 14.2360, km: 180, elev: 118 },
-                { name: "Баутцен", sub: "Саксония · крепость", lat: 51.1810, lng: 14.4240, km: 215, elev: 204 },
-                { name: "Циттау", sub: "Трёхстранный уголок", lat: 50.8990, lng: 14.8060, km: 260, elev: 242 },
-                { name: "Либерец", sub: "Чехия · горы Йизера", lat: 50.7671, lng: 15.0562, km: 285, elev: 374 },
-                { name: "Турнов", sub: "Чешский Рай", lat: 50.5870, lng: 15.1530, km: 305, elev: 265 },
-                { name: "Мельник", sub: "Слияние Влтавы и Лабы", lat: 50.3510, lng: 14.4730, km: 320, elev: 175 },
-                { name: "Прага", sub: "Финиш · Карлов мост", lat: 50.0755, lng: 14.4378, km: 335, elev: 190 },
+                { name: "Берлин", sub: "Старт · Бранденбургские ворота", lat: 52.5163, lng: 13.3777, km: 0, elev: 35 },
+                { name: "Кёниг Вустерхаузен", sub: "День 1 · Замок Фридриха Вильгельма", lat: 52.3015, lng: 13.6313, km: 42, elev: 42 },
+                { name: "Люббен", sub: "Ночёвка 1 · Шпреевальд", lat: 51.9435, lng: 13.8985, km: 80, elev: 52 },
+                { name: "Люббенау", sub: "День 2 · Каналы Шпреевальда", lat: 51.8660, lng: 13.9495, km: 95, elev: 52 },
+                { name: "Зентенберг", sub: "Ночёвка 2 · Озёрный край Лаузиц", lat: 51.5250, lng: 14.0020, km: 165, elev: 100 },
+                { name: "Морицбург", sub: "День 3 · Барочный замок «Три орешка»", lat: 51.1677, lng: 13.6795, km: 235, elev: 185 },
+                { name: "Дрезден", sub: "Ночёвка 3 · Фрауэнкирхе", lat: 51.0519, lng: 13.7413, km: 250, elev: 113 },
+                { name: "Кёнигштайн", sub: "День 4 · Крепость на скале", lat: 50.9190, lng: 14.0745, km: 289, elev: 125 },
+                { name: "Гренско", sub: "День 4 · Граница DE→CZ · Богемская Швейцария", lat: 50.8745, lng: 14.2400, km: 300, elev: 130 },
+                { name: "Дечин", sub: "Ночёвка 4 · Замок на Эльбе", lat: 50.7815, lng: 14.2145, km: 315, elev: 145 },
+                { name: "Литомержице", sub: "День 5 · Porta Bohemica · Чешские вина", lat: 50.5334, lng: 14.1320, km: 365, elev: 160 },
+                { name: "Роуднице над Лабем", sub: "Ночёвка 5 · Замок Лобковичей", lat: 50.4255, lng: 14.2600, km: 385, elev: 165 },
+                { name: "Мельник", sub: "День 6 · Слияние Влтавы и Эльбы", lat: 50.3510, lng: 14.4740, km: 410, elev: 155 },
+                { name: "Прага", sub: "Финиш · Карлов мост", lat: 50.0865, lng: 14.4113, km: 465, elev: 190 },
             ];
 
-            // Elevation profile data points (simplified)
+            // Elevation profile data points — flat route along rivers
             const ELEV_PROFILE = [
-                { km: 0, elev: 34 }, { km: 20, elev: 38 }, { km: 40, elev: 45 },
-                { km: 60, elev: 50 }, { km: 80, elev: 48 }, { km: 100, elev: 55 },
-                { km: 120, elev: 65 }, { km: 140, elev: 85 }, { km: 160, elev: 110 },
-                { km: 180, elev: 118 }, { km: 200, elev: 170 }, { km: 215, elev: 204 },
-                { km: 230, elev: 230 }, { km: 250, elev: 280 }, { km: 265, elev: 374 },
-                { km: 280, elev: 340 }, { km: 295, elev: 265 }, { km: 310, elev: 210 },
-                { km: 320, elev: 175 }, { km: 335, elev: 190 },
+                { km: 0, elev: 35 }, { km: 20, elev: 38 }, { km: 42, elev: 42 },
+                { km: 60, elev: 48 }, { km: 80, elev: 52 }, { km: 95, elev: 52 },
+                { km: 120, elev: 65 }, { km: 145, elev: 90 }, { km: 165, elev: 100 },
+                { km: 190, elev: 120 }, { km: 210, elev: 155 }, { km: 235, elev: 185 },
+                { km: 250, elev: 113 }, { km: 270, elev: 118 }, { km: 289, elev: 125 },
+                { km: 300, elev: 130 }, { km: 315, elev: 145 }, { km: 340, elev: 150 },
+                { km: 365, elev: 160 }, { km: 385, elev: 165 }, { km: 410, elev: 155 },
+                { km: 435, elev: 170 }, { km: 465, elev: 190 },
             ];
 
             let routeMap = null;
 
             function renderRoute() {
                 const maxElev = Math.max(...ELEV_PROFILE.map(p => p.elev));
-                const totalKm = 335;
+                const totalKm = 465;
                 const svgW = 100;
                 const svgH = 100;
 
@@ -2089,16 +2091,16 @@ self.addEventListener('fetch', e => {
                 return `
                     <div class="route-stats">
                         <div class="route-stat">
-                            <div class="route-stat-val" style="color:var(--green)">335</div>
+                            <div class="route-stat-val" style="color:var(--green)">465</div>
                             <div class="route-stat-label">КМ</div>
                         </div>
                         <div class="route-stat">
-                            <div class="route-stat-val" style="color:var(--blue)">3–4</div>
-                            <div class="route-stat-label">ДНЯ</div>
+                            <div class="route-stat-val" style="color:var(--blue)">6</div>
+                            <div class="route-stat-label">ДНЕЙ</div>
                         </div>
                         <div class="route-stat">
-                            <div class="route-stat-val" style="color:var(--orange)">374</div>
-                            <div class="route-stat-label">МАКС М</div>
+                            <div class="route-stat-val" style="color:var(--orange)">~900</div>
+                            <div class="route-stat-label">М НАБОР</div>
                         </div>
                     </div>
 
@@ -2122,8 +2124,8 @@ self.addEventListener('fetch', e => {
                             <path d="${linePath}" fill="none" stroke="url(#elev-grad)" stroke-width="1.5" vector-effect="non-scaling-stroke" />
                         </svg>
                         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--subtle);margin-top:4px">
-                            <span>Берлин 34м</span>
-                            <span>Либерец 374м</span>
+                            <span>Берлин 35м</span>
+                            <span>Морицбург 185м</span>
                             <span>Прага 190м</span>
                         </div>
                     </div>

@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+     version="1.1"
+     creator="Berlin-Prague Bike Route Planner">
+  <metadata>
+    <name>Berlin → Praha: Radweg Berlin-Dresden + Elberadweg + Labská stezka</name>
+    <desc>Велосипедный маршрут Берлин — Прага, ~465 км, 6 дней. Radweg Berlin-Dresden (250 км) + Elberadweg/Labská stezka (215 км). Минимальный набор высоты, максимум велодорожек.</desc>
+    <author>
+      <name>Berlin-Prague Bike Trip Planner</name>
+    </author>
+    <time>2026-03-21T10:55:30Z</time>
+  </metadata>
+  <wpt lat="52.5163" lon="13.3777">
+    <name>Day 1: Berlin, Brandenburger Tor</name>
+    <desc>Start</desc>
+    <sym>Flag, Blue</sym>
+  </wpt>
+  <wpt lat="52.4735" lon="13.4019">
+    <name>Day 1: Berlin-Tempelhof</name>
+    <desc>Durch Tempelhof</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="52.3497" lon="13.4503">
+    <name>Day 1: Dahlewitz</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="52.3015" lon="13.6313">
+    <name>Day 1: Königs Wusterhausen</name>
+    <desc>Schloss Friedrich Wilhelm I</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="52.1338" lon="13.765">
+    <name>Day 1: Märkisch Buchholz</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.9435" lon="13.8985">
+    <name>Day 1: Lübben (Spreewald)</name>
+    <desc>Nacht 1 — Spreewald</desc>
+    <sym>Flag, Blue</sym>
+  </wpt>
+  <wpt lat="51.866" lon="13.9495">
+    <name>Day 2: Lübbenau</name>
+    <desc>Spreewaldhafen</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.7445" lon="13.948">
+    <name>Day 2: Calau</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.64" lon="13.96">
+    <name>Day 2: Luckaitztal</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.525" lon="14.002">
+    <name>Day 2: Senftenberg</name>
+    <desc>Nacht 2 — Senftenberger See</desc>
+    <sym>Flag, Blue</sym>
+  </wpt>
+  <wpt lat="51.3745" lon="13.76">
+    <name>Day 3: Ortrand</name>
+    <desc>Grenze Brandenburg/Sachsen</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.26" lon="13.88">
+    <name>Day 3: Königsbrück</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.213" lon="13.7275">
+    <name>Day 3: Radeburg</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.1677" lon="13.6795">
+    <name>Day 3: Moritzburg</name>
+    <desc>Barockschloss — Drei Haselnüsse!</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.063" lon="13.741">
+    <name>Day 3: Dresden-Neustadt</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="51.0519" lon="13.7413">
+    <name>Day 3: Dresden, Frauenkirche</name>
+    <desc>Nacht 3 — Elbflorenz</desc>
+    <sym>Flag, Blue</sym>
+  </wpt>
+  <wpt lat="51.0078" lon="13.87">
+    <name>Day 4: Dresden-Pillnitz</name>
+    <desc>Schloss Pillnitz</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.9627" lon="13.938">
+    <name>Day 4: Pirna</name>
+    <desc>Barockmarktplatz</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.943" lon="14.079">
+    <name>Day 4: Kurort Rathen</name>
+    <desc>Basteiblick</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.919" lon="14.0745">
+    <name>Day 4: Königstein</name>
+    <desc>Festung Königstein</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.9178" lon="14.1487">
+    <name>Day 4: Bad Schandau</name>
+    <desc>Kurort, Kirnitzschtalbahn</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.8887" lon="14.2275">
+    <name>Day 4: Schmilka</name>
+    <desc>Letzter Ort in DE</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.8745" lon="14.24">
+    <name>Day 4: Hřensko</name>
+    <desc>Grenze CZ — Böhmische Schweiz</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.7815" lon="14.2145">
+    <name>Day 4: Děčín</name>
+    <desc>Nacht 4 — Schloss über der Elbe</desc>
+    <sym>Flag, Blue</sym>
+  </wpt>
+  <wpt lat="50.667" lon="14.1345">
+    <name>Day 5: Velké Březno</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.6607" lon="14.041">
+    <name>Day 5: Ústí nad Labem</name>
+    <desc>Střekov</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.57" lon="14.11">
+    <name>Day 5: Porta Bohemica (Církvice)</name>
+    <desc>Elbcanyon — Porta Bohemica</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.5334" lon="14.132">
+    <name>Day 5: Litoměřice</name>
+    <desc>Barockstadt, Mittagspause</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.511" lon="14.15">
+    <name>Day 5: Terezín</name>
+    <desc>Gedenkstätte (Abstecher)</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.4255" lon="14.26">
+    <name>Day 5: Roudnice nad Labem</name>
+    <desc>Nacht 5 — Lobkowicz-Schloss</desc>
+    <sym>Flag, Blue</sym>
+  </wpt>
+  <wpt lat="50.453" lon="14.373">
+    <name>Day 6: Štětí</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.351" lon="14.474">
+    <name>Day 6: Mělník</name>
+    <desc>Zusammenfluss Elbe &amp; Moldau, Wein</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.274" lon="14.327">
+    <name>Day 6: Veltrusy</name>
+    <desc>Schlosspark</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.241" lon="14.312">
+    <name>Day 6: Kralupy nad Vltavou</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.262" lon="14.298">
+    <name>Day 6: Nelahozeves</name>
+    <desc>Dvořáks Geburtsort</desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.156" lon="14.397">
+    <name>Day 6: Roztoky u Prahy</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.114" lon="14.413">
+    <name>Day 6: Praha-Troja</name>
+    <desc></desc>
+    <sym>Waypoint</sym>
+  </wpt>
+  <wpt lat="50.0865" lon="14.4113">
+    <name>Day 6: Praha, Karlův most</name>
+    <desc>Ziel! 🏁</desc>
+    <sym>Flag, Blue</sym>
+  </wpt>
+  <rte>
+    <name>Berlin → Praha (~465 km, 6 days)</name>
+    <desc>Radweg Berlin-Dresden + Elberadweg + Labská stezka</desc>
+    <rtept lat="52.5163" lon="13.3777">
+      <name>Berlin, Brandenburger Tor</name>
+      <desc>Day 1: Start</desc>
+    </rtept>
+    <rtept lat="52.4735" lon="13.4019">
+      <name>Berlin-Tempelhof</name>
+      <desc>Day 1: Durch Tempelhof</desc>
+    </rtept>
+    <rtept lat="52.3497" lon="13.4503">
+      <name>Dahlewitz</name>
+      <desc>Day 1</desc>
+    </rtept>
+    <rtept lat="52.3015" lon="13.6313">
+      <name>Königs Wusterhausen</name>
+      <desc>Day 1: Schloss Friedrich Wilhelm I</desc>
+    </rtept>
+    <rtept lat="52.1338" lon="13.765">
+      <name>Märkisch Buchholz</name>
+      <desc>Day 1</desc>
+    </rtept>
+    <rtept lat="51.9435" lon="13.8985">
+      <name>Lübben (Spreewald)</name>
+      <desc>Day 1: Nacht 1 — Spreewald</desc>
+    </rtept>
+    <rtept lat="51.866" lon="13.9495">
+      <name>Lübbenau</name>
+      <desc>Day 2: Spreewaldhafen</desc>
+    </rtept>
+    <rtept lat="51.7445" lon="13.948">
+      <name>Calau</name>
+      <desc>Day 2</desc>
+    </rtept>
+    <rtept lat="51.64" lon="13.96">
+      <name>Luckaitztal</name>
+      <desc>Day 2</desc>
+    </rtept>
+    <rtept lat="51.525" lon="14.002">
+      <name>Senftenberg</name>
+      <desc>Day 2: Nacht 2 — Senftenberger See</desc>
+    </rtept>
+    <rtept lat="51.3745" lon="13.76">
+      <name>Ortrand</name>
+      <desc>Day 3: Grenze Brandenburg/Sachsen</desc>
+    </rtept>
+    <rtept lat="51.26" lon="13.88">
+      <name>Königsbrück</name>
+      <desc>Day 3</desc>
+    </rtept>
+    <rtept lat="51.213" lon="13.7275">
+      <name>Radeburg</name>
+      <desc>Day 3</desc>
+    </rtept>
+    <rtept lat="51.1677" lon="13.6795">
+      <name>Moritzburg</name>
+      <desc>Day 3: Barockschloss — Drei Haselnüsse!</desc>
+    </rtept>
+    <rtept lat="51.063" lon="13.741">
+      <name>Dresden-Neustadt</name>
+      <desc>Day 3</desc>
+    </rtept>
+    <rtept lat="51.0519" lon="13.7413">
+      <name>Dresden, Frauenkirche</name>
+      <desc>Day 3: Nacht 3 — Elbflorenz</desc>
+    </rtept>
+    <rtept lat="51.0078" lon="13.87">
+      <name>Dresden-Pillnitz</name>
+      <desc>Day 4: Schloss Pillnitz</desc>
+    </rtept>
+    <rtept lat="50.9627" lon="13.938">
+      <name>Pirna</name>
+      <desc>Day 4: Barockmarktplatz</desc>
+    </rtept>
+    <rtept lat="50.943" lon="14.079">
+      <name>Kurort Rathen</name>
+      <desc>Day 4: Basteiblick</desc>
+    </rtept>
+    <rtept lat="50.919" lon="14.0745">
+      <name>Königstein</name>
+      <desc>Day 4: Festung Königstein</desc>
+    </rtept>
+    <rtept lat="50.9178" lon="14.1487">
+      <name>Bad Schandau</name>
+      <desc>Day 4: Kurort, Kirnitzschtalbahn</desc>
+    </rtept>
+    <rtept lat="50.8887" lon="14.2275">
+      <name>Schmilka</name>
+      <desc>Day 4: Letzter Ort in DE</desc>
+    </rtept>
+    <rtept lat="50.8745" lon="14.24">
+      <name>Hřensko</name>
+      <desc>Day 4: Grenze CZ — Böhmische Schweiz</desc>
+    </rtept>
+    <rtept lat="50.7815" lon="14.2145">
+      <name>Děčín</name>
+      <desc>Day 4: Nacht 4 — Schloss über der Elbe</desc>
+    </rtept>
+    <rtept lat="50.667" lon="14.1345">
+      <name>Velké Březno</name>
+      <desc>Day 5</desc>
+    </rtept>
+    <rtept lat="50.6607" lon="14.041">
+      <name>Ústí nad Labem</name>
+      <desc>Day 5: Střekov</desc>
+    </rtept>
+    <rtept lat="50.57" lon="14.11">
+      <name>Porta Bohemica (Církvice)</name>
+      <desc>Day 5: Elbcanyon — Porta Bohemica</desc>
+    </rtept>
+    <rtept lat="50.5334" lon="14.132">
+      <name>Litoměřice</name>
+      <desc>Day 5: Barockstadt, Mittagspause</desc>
+    </rtept>
+    <rtept lat="50.511" lon="14.15">
+      <name>Terezín</name>
+      <desc>Day 5: Gedenkstätte (Abstecher)</desc>
+    </rtept>
+    <rtept lat="50.4255" lon="14.26">
+      <name>Roudnice nad Labem</name>
+      <desc>Day 5: Nacht 5 — Lobkowicz-Schloss</desc>
+    </rtept>
+    <rtept lat="50.453" lon="14.373">
+      <name>Štětí</name>
+      <desc>Day 6</desc>
+    </rtept>
+    <rtept lat="50.351" lon="14.474">
+      <name>Mělník</name>
+      <desc>Day 6: Zusammenfluss Elbe &amp; Moldau, Wein</desc>
+    </rtept>
+    <rtept lat="50.274" lon="14.327">
+      <name>Veltrusy</name>
+      <desc>Day 6: Schlosspark</desc>
+    </rtept>
+    <rtept lat="50.241" lon="14.312">
+      <name>Kralupy nad Vltavou</name>
+      <desc>Day 6</desc>
+    </rtept>
+    <rtept lat="50.262" lon="14.298">
+      <name>Nelahozeves</name>
+      <desc>Day 6: Dvořáks Geburtsort</desc>
+    </rtept>
+    <rtept lat="50.156" lon="14.397">
+      <name>Roztoky u Prahy</name>
+      <desc>Day 6</desc>
+    </rtept>
+    <rtept lat="50.114" lon="14.413">
+      <name>Praha-Troja</name>
+      <desc>Day 6</desc>
+    </rtept>
+    <rtept lat="50.0865" lon="14.4113">
+      <name>Praha, Karlův most</name>
+      <desc>Day 6: Ziel! 🏁</desc>
+    </rtept>
+  </rte>
+  <trk>
+    <name>Berlin → Praha (~465 km)</name>
+    <desc>Radweg Berlin-Dresden + Elberadweg + Labská stezka</desc>
+    <trkseg>
+      <!-- Day 1 -->
+      <trkpt lat="52.5163" lon="13.3777"><name>Berlin, Brandenburger Tor</name></trkpt>
+      <trkpt lat="52.4735" lon="13.4019"><name>Berlin-Tempelhof</name></trkpt>
+      <trkpt lat="52.3497" lon="13.4503"><name>Dahlewitz</name></trkpt>
+      <trkpt lat="52.3015" lon="13.6313"><name>Königs Wusterhausen</name></trkpt>
+      <trkpt lat="52.1338" lon="13.765"><name>Märkisch Buchholz</name></trkpt>
+      <trkpt lat="51.9435" lon="13.8985"><name>Lübben (Spreewald)</name></trkpt>
+    </trkseg>
+    <trkseg>
+      <!-- Day 2 -->
+      <trkpt lat="51.866" lon="13.9495"><name>Lübbenau</name></trkpt>
+      <trkpt lat="51.7445" lon="13.948"><name>Calau</name></trkpt>
+      <trkpt lat="51.64" lon="13.96"><name>Luckaitztal</name></trkpt>
+      <trkpt lat="51.525" lon="14.002"><name>Senftenberg</name></trkpt>
+    </trkseg>
+    <trkseg>
+      <!-- Day 3 -->
+      <trkpt lat="51.3745" lon="13.76"><name>Ortrand</name></trkpt>
+      <trkpt lat="51.26" lon="13.88"><name>Königsbrück</name></trkpt>
+      <trkpt lat="51.213" lon="13.7275"><name>Radeburg</name></trkpt>
+      <trkpt lat="51.1677" lon="13.6795"><name>Moritzburg</name></trkpt>
+      <trkpt lat="51.063" lon="13.741"><name>Dresden-Neustadt</name></trkpt>
+      <trkpt lat="51.0519" lon="13.7413"><name>Dresden, Frauenkirche</name></trkpt>
+    </trkseg>
+    <trkseg>
+      <!-- Day 4 -->
+      <trkpt lat="51.0078" lon="13.87"><name>Dresden-Pillnitz</name></trkpt>
+      <trkpt lat="50.9627" lon="13.938"><name>Pirna</name></trkpt>
+      <trkpt lat="50.943" lon="14.079"><name>Kurort Rathen</name></trkpt>
+      <trkpt lat="50.919" lon="14.0745"><name>Königstein</name></trkpt>
+      <trkpt lat="50.9178" lon="14.1487"><name>Bad Schandau</name></trkpt>
+      <trkpt lat="50.8887" lon="14.2275"><name>Schmilka</name></trkpt>
+      <trkpt lat="50.8745" lon="14.24"><name>Hřensko</name></trkpt>
+      <trkpt lat="50.7815" lon="14.2145"><name>Děčín</name></trkpt>
+    </trkseg>
+    <trkseg>
+      <!-- Day 5 -->
+      <trkpt lat="50.667" lon="14.1345"><name>Velké Březno</name></trkpt>
+      <trkpt lat="50.6607" lon="14.041"><name>Ústí nad Labem</name></trkpt>
+      <trkpt lat="50.57" lon="14.11"><name>Porta Bohemica (Církvice)</name></trkpt>
+      <trkpt lat="50.5334" lon="14.132"><name>Litoměřice</name></trkpt>
+      <trkpt lat="50.511" lon="14.15"><name>Terezín</name></trkpt>
+      <trkpt lat="50.4255" lon="14.26"><name>Roudnice nad Labem</name></trkpt>
+    </trkseg>
+    <trkseg>
+      <!-- Day 6 -->
+      <trkpt lat="50.453" lon="14.373"><name>Štětí</name></trkpt>
+      <trkpt lat="50.351" lon="14.474"><name>Mělník</name></trkpt>
+      <trkpt lat="50.274" lon="14.327"><name>Veltrusy</name></trkpt>
+      <trkpt lat="50.241" lon="14.312"><name>Kralupy nad Vltavou</name></trkpt>
+      <trkpt lat="50.262" lon="14.298"><name>Nelahozeves</name></trkpt>
+      <trkpt lat="50.156" lon="14.397"><name>Roztoky u Prahy</name></trkpt>
+      <trkpt lat="50.114" lon="14.413"><name>Praha-Troja</name></trkpt>
+      <trkpt lat="50.0865" lon="14.4113"><name>Praha, Karlův most</name></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
