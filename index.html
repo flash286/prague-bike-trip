@@ -35,6 +35,9 @@
             href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Unbounded:wght@700;900&display=swap"
             rel="stylesheet"
         />
+        <!-- Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
         <style>
             :root {
@@ -812,6 +815,125 @@
                 color: #334155;
                 letter-spacing: 0.1em;
             }
+
+            /* Route tab */
+            #route-map {
+                width: 100%;
+                height: 320px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                overflow: hidden;
+                z-index: 1;
+            }
+            .route-stats {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                margin-bottom: 14px;
+            }
+            .route-stat {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 12px;
+                text-align: center;
+            }
+            .route-stat-val {
+                font-family: "Unbounded", sans-serif;
+                font-size: 18px;
+                font-weight: 700;
+                color: #fff;
+            }
+            .route-stat-label {
+                font-size: 10px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+            .elevation-chart {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 14px;
+                margin-top: 14px;
+            }
+            .elevation-chart h3 {
+                font-size: 12px;
+                color: var(--muted);
+                margin-bottom: 10px;
+                letter-spacing: 0.06em;
+            }
+            .elev-svg {
+                width: 100%;
+                height: 100px;
+            }
+            .waypoint-list {
+                margin-top: 14px;
+            }
+            .waypoint-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 14px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                margin-bottom: 6px;
+            }
+            .waypoint-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+            .waypoint-info {
+                flex: 1;
+            }
+            .waypoint-name {
+                font-size: 12px;
+                color: var(--text);
+                font-weight: 600;
+            }
+            .waypoint-detail {
+                font-size: 10px;
+                color: var(--muted);
+                margin-top: 1px;
+            }
+            .waypoint-km {
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--subtle);
+            }
+            .komoot-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                margin-top: 14px;
+                padding: 14px;
+                background: linear-gradient(135deg, #4a7c3f 0%, #2d5a27 100%);
+                border: 1px solid #5a9c4f;
+                border-radius: 12px;
+                color: #fff;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 13px;
+                font-weight: 700;
+                text-decoration: none;
+                transition: opacity 0.15s;
+                -webkit-touch-callout: default;
+            }
+            .komoot-btn:active {
+                opacity: 0.7;
+            }
+            .route-section-title {
+                font-size: 11px;
+                color: var(--muted);
+                letter-spacing: 0.06em;
+                margin: 14px 0 8px;
+            }
+            .leaflet-container {
+                background: #0a0a0f !important;
+            }
         </style>
     </head>
     <body>
@@ -857,6 +979,10 @@
                 <button class="nav-btn" onclick="showTab('hr')" id="tab-hr">
                     <span class="icon">❤️</span>
                     <span>Пульс</span>
+                </button>
+                <button class="nav-btn" onclick="showTab('route')" id="tab-route">
+                    <span class="icon">🗺️</span>
+                    <span>Маршрут</span>
                 </button>
             </nav>
         </div>
@@ -1635,6 +1761,9 @@
                     el.innerHTML = renderPlan();
                 } else if (activeTab === "exercises") {
                     el.innerHTML = renderExercises();
+                } else if (activeTab === "route") {
+                    el.innerHTML = renderRoute();
+                    initMap();
                 } else {
                     el.innerHTML = renderHR();
                 }
@@ -1895,6 +2024,176 @@ self.addEventListener('fetch', e => {
                 });
                 const swUrl = URL.createObjectURL(blob);
                 navigator.serviceWorker.register(swUrl).catch(() => {});
+            }
+
+            // Route waypoints — Berlin → Prague via EuroVelo 7
+            const ROUTE_WAYPOINTS = [
+                { name: "Берлин", sub: "Старт · Alexanderplatz", lat: 52.5200, lng: 13.4050, km: 0, elev: 34 },
+                { name: "Людвигсфельде", sub: "Выезд из Берлина", lat: 52.3010, lng: 13.2540, km: 28, elev: 42 },
+                { name: "Барут", sub: "Бранденбург", lat: 52.0520, lng: 13.5030, km: 55, elev: 48 },
+                { name: "Люббенау", sub: "Шпреевальд · Каналы", lat: 51.8660, lng: 13.9570, km: 95, elev: 52 },
+                { name: "Коттбус", sub: "Отдых · инфраструктура", lat: 51.7600, lng: 14.3340, km: 125, elev: 68 },
+                { name: "Шпремберг", sub: "Шпрее", lat: 51.5720, lng: 14.3710, km: 150, elev: 105 },
+                { name: "Хойерсверда", sub: "Верхняя Лужица", lat: 51.4340, lng: 14.2360, km: 180, elev: 118 },
+                { name: "Баутцен", sub: "Саксония · крепость", lat: 51.1810, lng: 14.4240, km: 215, elev: 204 },
+                { name: "Циттау", sub: "Трёхстранный уголок", lat: 50.8990, lng: 14.8060, km: 260, elev: 242 },
+                { name: "Либерец", sub: "Чехия · горы Йизера", lat: 50.7671, lng: 15.0562, km: 285, elev: 374 },
+                { name: "Турнов", sub: "Чешский Рай", lat: 50.5870, lng: 15.1530, km: 305, elev: 265 },
+                { name: "Мельник", sub: "Слияние Влтавы и Лабы", lat: 50.3510, lng: 14.4730, km: 320, elev: 175 },
+                { name: "Прага", sub: "Финиш · Карлов мост", lat: 50.0755, lng: 14.4378, km: 335, elev: 190 },
+            ];
+
+            // Elevation profile data points (simplified)
+            const ELEV_PROFILE = [
+                { km: 0, elev: 34 }, { km: 20, elev: 38 }, { km: 40, elev: 45 },
+                { km: 60, elev: 50 }, { km: 80, elev: 48 }, { km: 100, elev: 55 },
+                { km: 120, elev: 65 }, { km: 140, elev: 85 }, { km: 160, elev: 110 },
+                { km: 180, elev: 118 }, { km: 200, elev: 170 }, { km: 215, elev: 204 },
+                { km: 230, elev: 230 }, { km: 250, elev: 280 }, { km: 265, elev: 374 },
+                { km: 280, elev: 340 }, { km: 295, elev: 265 }, { km: 310, elev: 210 },
+                { km: 320, elev: 175 }, { km: 335, elev: 190 },
+            ];
+
+            let routeMap = null;
+
+            function renderRoute() {
+                const maxElev = Math.max(...ELEV_PROFILE.map(p => p.elev));
+                const totalKm = 335;
+                const svgW = 100;
+                const svgH = 100;
+
+                // Build SVG path for elevation
+                const points = ELEV_PROFILE.map(p => {
+                    const x = (p.km / totalKm) * svgW;
+                    const y = svgH - (p.elev / (maxElev + 30)) * svgH;
+                    return `${x},${y}`;
+                });
+                const linePath = `M${points.join(' L')}`;
+                const areaPath = `${linePath} L${svgW},${svgH} L0,${svgH} Z`;
+
+                const waypoints = ROUTE_WAYPOINTS.map((wp, i) => {
+                    const isStart = i === 0;
+                    const isEnd = i === ROUTE_WAYPOINTS.length - 1;
+                    const color = isStart ? 'var(--green)' : isEnd ? 'var(--orange)' : 'var(--blue)';
+                    return `
+                        <div class="waypoint-item">
+                            <div class="waypoint-dot" style="background:${color};${isStart || isEnd ? 'width:12px;height:12px;' : ''}"></div>
+                            <div class="waypoint-info">
+                                <div class="waypoint-name">${wp.name}</div>
+                                <div class="waypoint-detail">${wp.sub} · ${wp.elev} м</div>
+                            </div>
+                            <div class="waypoint-km">${wp.km} км</div>
+                        </div>`;
+                }).join('');
+
+                return `
+                    <div class="route-stats">
+                        <div class="route-stat">
+                            <div class="route-stat-val" style="color:var(--green)">335</div>
+                            <div class="route-stat-label">КМ</div>
+                        </div>
+                        <div class="route-stat">
+                            <div class="route-stat-val" style="color:var(--blue)">3–4</div>
+                            <div class="route-stat-label">ДНЯ</div>
+                        </div>
+                        <div class="route-stat">
+                            <div class="route-stat-val" style="color:var(--orange)">374</div>
+                            <div class="route-stat-label">МАКС М</div>
+                        </div>
+                    </div>
+
+                    <div id="route-map"></div>
+
+                    <div class="elevation-chart">
+                        <h3>ВЫСОТНЫЙ ПРОФИЛЬ</h3>
+                        <svg class="elev-svg" viewBox="0 0 ${svgW} ${svgH}" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="elev-grad" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stop-color="#4ade80" />
+                                    <stop offset="50%" stop-color="#60a5fa" />
+                                    <stop offset="100%" stop-color="#f97316" />
+                                </linearGradient>
+                                <linearGradient id="elev-fill" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="rgba(96,165,250,0.3)" />
+                                    <stop offset="100%" stop-color="rgba(96,165,250,0)" />
+                                </linearGradient>
+                            </defs>
+                            <path d="${areaPath}" fill="url(#elev-fill)" />
+                            <path d="${linePath}" fill="none" stroke="url(#elev-grad)" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+                        </svg>
+                        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--subtle);margin-top:4px">
+                            <span>Берлин 34м</span>
+                            <span>Либерец 374м</span>
+                            <span>Прага 190м</span>
+                        </div>
+                    </div>
+
+                    <div class="route-section-title">КЛЮЧЕВЫЕ ТОЧКИ МАРШРУТА</div>
+                    <div class="waypoint-list">${waypoints}</div>
+
+                    <a href="https://www.komoot.com/plan/@51.3,14.0,8z" target="_blank" rel="noopener" class="komoot-btn">
+                        🧭 Спланировать на Komoot
+                    </a>
+                    <div style="text-align:center;font-size:10px;color:var(--subtle);margin:8px 0 20px">
+                        Откроет планировщик маршрутов Komoot для Berlin → Prague
+                    </div>
+                `;
+            }
+
+            function initMap() {
+                if (routeMap) {
+                    routeMap.remove();
+                    routeMap = null;
+                }
+                const mapEl = document.getElementById('route-map');
+                if (!mapEl || typeof L === 'undefined') return;
+
+                routeMap = L.map('route-map', {
+                    zoomControl: false,
+                    attributionControl: false,
+                }).setView([51.3, 14.0], 7);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 17,
+                }).addTo(routeMap);
+
+                // Draw route polyline
+                const coords = ROUTE_WAYPOINTS.map(w => [w.lat, w.lng]);
+                L.polyline(coords, {
+                    color: '#60a5fa',
+                    weight: 3,
+                    opacity: 0.8,
+                    smoothFactor: 1.5,
+                }).addTo(routeMap);
+
+                // Add markers
+                ROUTE_WAYPOINTS.forEach((wp, i) => {
+                    const isStart = i === 0;
+                    const isEnd = i === ROUTE_WAYPOINTS.length - 1;
+                    const size = isStart || isEnd ? 12 : 7;
+                    const color = isStart ? '#4ade80' : isEnd ? '#f97316' : '#60a5fa';
+
+                    const icon = L.divIcon({
+                        className: '',
+                        html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid ${color}40;box-shadow:0 0 6px ${color}60"></div>`,
+                        iconSize: [size, size],
+                        iconAnchor: [size / 2, size / 2],
+                    });
+
+                    L.marker([wp.lat, wp.lng], { icon })
+                        .bindPopup(`<b>${wp.name}</b><br>${wp.sub}<br>${wp.km} км · ${wp.elev} м`, {
+                            className: 'route-popup',
+                        })
+                        .addTo(routeMap);
+                });
+
+                // Fit bounds
+                routeMap.fitBounds(coords, { padding: [20, 20] });
+
+                // Attribution
+                L.control.attribution({ position: 'bottomright', prefix: false })
+                    .addAttribution('© <a href="https://carto.com">CARTO</a> © <a href="https://osm.org">OSM</a>')
+                    .addTo(routeMap);
             }
 
             // Initial render
